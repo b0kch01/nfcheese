@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>NF🧀 | Twitter NFT PP</title>
+
+        <link rel="icon" href="icon.png" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div class="container">
+            <img id="preview" src="icon.png" width="150" />
+
+            <input id="fileInput" type="file" placeholder="Image URL" />
+
+            <div>
+                <button onclick="nfcheese(true, false);">Download Light</button>
+                <button class="dark" onclick="nfcheese(true, true);">
+                    Download Dark
+                </button>
+            </div>
+
+            <canvas id="canvas" width="512" height="512"></canvas>
+            <svg
+                id="cheese"
+                width="512"
+                height="512"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M161.237 53H347.382C362.366 53 376.215 60.9832 383.726 73.9496L478.647 237.832C486.274 251.001 486.181 267.265 478.404 280.346L383.801 439.464C376.231 452.197 362.513 460 347.7 460H160.92C145.96 460 132.129 452.042 124.61 439.108L32.1122 279.995C24.611 267.092 24.5212 251.177 31.8762 238.19L124.691 74.3028C132.146 61.1376 146.107 53 161.237 53Z"
+                    fill="url(#pattern0)"
+                />
+                <defs>
+                    <pattern id="pattern0" width="1" height="1">
+                        <image
+                            id="screenshot"
+                            width="458"
+                            height="407"
+                            preserveAspectRatio="xMidYMid slice"
+                            xlink:href=""
+                        />
+                    </pattern>
+                </defs>
+            </svg>
+        </div>
+
+        <footer>
+            v1.0 ~ made with 🧀 by
+            <a href="https://github.com/b0kch01/nfcheese">@b0kch01</a>
+        </footer>
+
+        <script>
+            console.log("https://nathanchoi-beta.vercel.app");
+
+            function save() {
+                const url = document.querySelector("#preview").src;
+
+                const downloadLink = document.createElement("a");
+                downloadLink.href = url;
+                downloadLink.download = "NFcheesed.png";
+                downloadLink.textContent = "Download Image";
+
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+
+            function nfcheese(saveImg, dark) {
+                if (document.querySelector("#fileInput").files.length < 1) {
+                    return alert(">:( Don't screenshot my NFT!");
+                }
+
+                const img = new Image();
+                const svgString = new XMLSerializer().serializeToString(
+                    document.querySelector("#cheese")
+                );
+
+                const canvas = document.querySelector("#canvas");
+                const ctx = canvas.getContext("2d");
+                const URL = self.URL || self.webkitURL || self;
+                const svg = new Blob([svgString], {
+                    type: "image/svg+xml;charset=utf-8",
+                });
+
+                const dataURL = URL.createObjectURL(svg);
+                img.onload = () => {
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    if (dark) {
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+
+                    ctx.drawImage(img, 0, 0);
+                    const imgURL = canvas.toDataURL("image/png");
+
+                    URL.revokeObjectURL(imgURL);
+
+                    document.querySelector("#preview").src = imgURL;
+
+                    if (saveImg) save();
+                };
+
+                img.src = dataURL;
+            }
+
+            function readFile() {
+                if (this.files.length < 1) {
+                    return (document.querySelector("#preview").src =
+                        "icon.png");
+                }
+
+                if (this.files && this.files[0]) {
+                    var FR = new FileReader();
+
+                    FR.addEventListener("load", function (e) {
+                        document
+                            .getElementById("screenshot")
+                            .setAttribute("xlink:href", e.target.result);
+
+                        nfcheese(false, false);
+                    });
+
+                    FR.readAsDataURL(this.files[0]);
+                }
+            }
+
+            document
+                .getElementById("fileInput")
+                .addEventListener("change", readFile);
+        </script>
+    </body>
+</html>
